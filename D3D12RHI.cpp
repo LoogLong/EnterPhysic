@@ -3,23 +3,23 @@
 
 D3D12RHI::D3D12RHI(const HWND& hwnd)
 {
-	// ´ò¿ªÏÔÊ¾×ÓÏµÍ³µÄµ÷ÊÔÖ§³Ö
+	// æ‰“å¼€æ˜¾ç¤ºå­ç³»ç»Ÿçš„è°ƒè¯•æ”¯æŒ
 	{
 #if defined(_DEBUG)
 		ComPtr<ID3D12Debug> debugController;
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 		{
 			debugController->EnableDebugLayer();
-			// ´ò¿ª¸½¼ÓµÄµ÷ÊÔÖ§³Ö
+			// æ‰“å¼€é™„åŠ çš„è°ƒè¯•æ”¯æŒ
 			m_dxgi_factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 #endif
 	}
 
-	// ´´½¨DXGI Factory¶ÔÏó
+	// åˆ›å»ºDXGI Factoryå¯¹è±¡
 	{
 		CHECK_RESULT(CreateDXGIFactory2(m_dxgi_factory_flags, IID_PPV_ARGS(&m_dxgi_factory)));
-		// ¹Ø±ÕALT+ENTER¼üÇĞ»»È«ÆÁµÄ¹¦ÄÜ£¬ÒòÎªÎÒÃÇÃ»ÓĞÊµÏÖOnSize´¦Àí£¬ËùÒÔÏÈ¹Ø±Õ
+		// å…³é—­ALT+ENTERé”®åˆ‡æ¢å…¨å±çš„åŠŸèƒ½ï¼Œå› ä¸ºæˆ‘ä»¬æ²¡æœ‰å®ç°OnSizeå¤„ç†ï¼Œæ‰€ä»¥å…ˆå…³é—­
 		CHECK_RESULT(m_dxgi_factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER));
 	}
 
@@ -30,19 +30,19 @@ void D3D12RHI::CreateDevice()
 {
 	DXGI_ADAPTER_DESC1 stAdapterDesc = {};
 
-	// Ã¶¾Ù¸ßĞÔÄÜÏÔ¿¨
+	// æšä¸¾é«˜æ€§èƒ½æ˜¾å¡
 	for (UINT adapterIndex = 0; DXGI_ERROR_NOT_FOUND != m_dxgi_factory->EnumAdapterByGpuPreference(
 		     adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&m_dxgi_adapter))
 	     ; ++adapterIndex)
 	{
 		m_dxgi_adapter->GetDesc1(&stAdapterDesc);
-		// ´´½¨D3D12.1µÄÉè±¸
+		// åˆ›å»ºD3D12.1çš„è®¾å¤‡
 		if (SUCCEEDED(D3D12CreateDevice(m_dxgi_adapter.Get(), m_feature_level, IID_PPV_ARGS(&m_d3d12_device))))
 		{
 			break;
 		}
 	}
-	// °ÑÏÔ¿¨Ãû×Ö¸´ÖÆ³öÀ´
+	// æŠŠæ˜¾å¡åå­—å¤åˆ¶å‡ºæ¥
 	StringCchPrintf(m_adapter_name, MAX_PATH, _T("%s"), stAdapterDesc.Description);
 }
 
@@ -57,7 +57,7 @@ void D3D12RHI::CreateCommandQueue()
 	CHECK_RESULT(
 		m_d3d12_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_cmd_allocator)));
 
-	// ´´½¨Í¼ĞÎÃüÁîÁĞ±í
+	// åˆ›å»ºå›¾å½¢å‘½ä»¤åˆ—è¡¨
 	CHECK_RESULT(
 		m_d3d12_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_cmd_allocator.Get(), nullptr,
 			IID_PPV_ARGS(&m_cmd_list)));
@@ -89,17 +89,17 @@ void D3D12RHI::CreateSwapChain(const int width, const int height)
 
 	m_frame_index = m_swap_chain4->GetCurrentBackBufferIndex();
 
-	//´´½¨RTV(äÖÈ¾Ä¿±êÊÓÍ¼)ÃèÊö·û¶Ñ
+	//åˆ›å»ºRTV(æ¸²æŸ“ç›®æ ‡è§†å›¾)æè¿°ç¬¦å †
 	D3D12_DESCRIPTOR_HEAP_DESC stRTVHeapDesc = {};
 	stRTVHeapDesc.NumDescriptors = RHID3D12::FRAME_BACK_BUF_COUNT;
 	stRTVHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	stRTVHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
 	CHECK_RESULT(m_d3d12_device->CreateDescriptorHeap(&stRTVHeapDesc, IID_PPV_ARGS(&m_rtv_heap)));
-	//µÃµ½Ã¿¸öÃèÊö·ûÔªËØµÄ´óĞ¡
+	//å¾—åˆ°æ¯ä¸ªæè¿°ç¬¦å…ƒç´ çš„å¤§å°
 	m_rtv_descriptor_size = m_d3d12_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-	//´´½¨RTVµÄÃèÊö·û
+	//åˆ›å»ºRTVçš„æè¿°ç¬¦
 	D3D12_CPU_DESCRIPTOR_HANDLE stRTVHandle = m_rtv_heap->GetCPUDescriptorHandleForHeapStart();
 	for (UINT i = 0; i < RHID3D12::FRAME_BACK_BUF_COUNT; ++i)
 	{
@@ -159,7 +159,7 @@ void D3D12RHI::CreatePipelineStateObject()
 	ComPtr<ID3DBlob> blob_pixel_shader;
 	ComPtr<ID3DBlob> error_blob;
 #if defined(_DEBUG)
-	//µ÷ÊÔ×´Ì¬ÏÂ£¬´ò¿ªShader±àÒëµÄµ÷ÊÔ±êÖ¾£¬²»ÓÅ»¯
+	//è°ƒè¯•çŠ¶æ€ä¸‹ï¼Œæ‰“å¼€Shaderç¼–è¯‘çš„è°ƒè¯•æ ‡å¿—ï¼Œä¸ä¼˜åŒ–
 	UINT nCompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
 		UINT nCompileFlags = 0;
@@ -237,13 +237,13 @@ void D3D12RHI::CreateRenderEndFence()
 	CHECK_RESULT(m_d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_render_end_fence.m_fence)));
 	m_render_end_fence.m_fence_value = 1u;
 
-	// ´´½¨Ò»¸öEventÍ¬²½¶ÔÏó£¬ÓÃÓÚµÈ´ıÎ§À¸ÊÂ¼şÍ¨Öª
+	// åˆ›å»ºä¸€ä¸ªEventåŒæ­¥å¯¹è±¡ï¼Œç”¨äºç­‰å¾…å›´æ äº‹ä»¶é€šçŸ¥
 	m_render_end_fence.m_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	if (m_render_end_fence.m_fence_event == nullptr)
 	{
 		CHECK_RESULT(HRESULT_FROM_WIN32(GetLastError()));
 	}
-	// µÚÒ»´ÎÑ­»·µÄÈë¿ÚÌõ¼ş
+	// ç¬¬ä¸€æ¬¡å¾ªç¯çš„å…¥å£æ¡ä»¶
 	SetEvent(m_render_end_fence.m_fence_event);
 }
 
@@ -254,23 +254,23 @@ DWORD D3D12RHI::WaitForFence() const
 
 void D3D12RHI::BeginFrame()
 {
-	//»ñÈ¡ĞÂµÄºó»º³åĞòºÅ£¬ÒòÎªPresentÕæÕıÍê³ÉÊ±ºó»º³åµÄĞòºÅ¾Í¸üĞÂÁË
+	//è·å–æ–°çš„åç¼“å†²åºå·ï¼Œå› ä¸ºPresentçœŸæ­£å®Œæˆæ—¶åç¼“å†²çš„åºå·å°±æ›´æ–°äº†
 	m_frame_index = m_swap_chain4->GetCurrentBackBufferIndex();
 
-	//ÃüÁî·ÖÅäÆ÷ÏÈResetÒ»ÏÂ
+	//å‘½ä»¤åˆ†é…å™¨å…ˆResetä¸€ä¸‹
 	HRESULT h = m_cmd_allocator->Reset();
 	if (!SUCCEEDED(h))
 	{
 		printf("[ERROR] Failed Reset CMD Allocator!\n");
 	}
 	// CHECK_RESULT(h);
-	//ResetÃüÁîÁĞ±í£¬²¢ÖØĞÂÖ¸¶¨ÃüÁî·ÖÅäÆ÷ºÍPSO¶ÔÏó
+	//Resetå‘½ä»¤åˆ—è¡¨ï¼Œå¹¶é‡æ–°æŒ‡å®šå‘½ä»¤åˆ†é…å™¨å’ŒPSOå¯¹è±¡
 	h = m_cmd_list->Reset(m_cmd_allocator.Get(), nullptr);
 	if (!SUCCEEDED(h))
 	{
 		printf("[ERROR] Failed Reset CMD List!\n");
 	}
-	// Í¨¹ı×ÊÔ´ÆÁÕÏÅĞ¶¨ºó»º³åÒÑ¾­ÇĞ»»Íê±Ï¿ÉÒÔ¿ªÊ¼äÖÈ¾ÁË
+	// é€šè¿‡èµ„æºå±éšœåˆ¤å®šåç¼“å†²å·²ç»åˆ‡æ¢å®Œæ¯•å¯ä»¥å¼€å§‹æ¸²æŸ“äº†
 	D3D12_RESOURCE_BARRIER resource_barrier;
 	resource_barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	resource_barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -287,7 +287,7 @@ void D3D12RHI::BeginFrame()
 
 	auto rtv_handle = m_rtv_heap->GetCPUDescriptorHandleForHeapStart();
 	rtv_handle.ptr += static_cast<unsigned long long>(m_frame_index) * m_rtv_descriptor_size;
-	//ÉèÖÃäÖÈ¾Ä¿±ê
+	//è®¾ç½®æ¸²æŸ“ç›®æ ‡
 	m_cmd_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
 		
 	m_cmd_list->ClearRenderTargetView(rtv_handle, RHID3D12::CLEAR_COLOR, 0, nullptr);
@@ -321,7 +321,7 @@ void D3D12RHI::EndFrame()
 	stEndResBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	stEndResBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	m_cmd_list->ResourceBarrier(1, &stEndResBarrier);
-	//¹Ø±ÕÃüÁîÁĞ±í£¬¿ÉÒÔÈ¥Ö´ĞĞÁË
+	//å…³é—­å‘½ä»¤åˆ—è¡¨ï¼Œå¯ä»¥å»æ‰§è¡Œäº†
 	// CHECK_RESULT();
 	HRESULT h = m_cmd_list->Close();
 	if (!SUCCEEDED(h))
@@ -330,14 +330,14 @@ void D3D12RHI::EndFrame()
 	}
 
 
-	//Ö´ĞĞÃüÁîÁĞ±í
+	//æ‰§è¡Œå‘½ä»¤åˆ—è¡¨
 	ID3D12CommandList* ppCommandLists[] = {m_cmd_list.Get()};
 	m_cmd_queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-	//Ìá½»»­Ãæ
+	//æäº¤ç”»é¢
 	CHECK_RESULT(m_swap_chain4->Present(1, 0));
 
-	//¿ªÊ¼Í¬²½GPUÓëCPUµÄÖ´ĞĞ£¬ÏÈ¼ÇÂ¼Î§À¸±ê¼ÇÖµ
+	//å¼€å§‹åŒæ­¥GPUä¸CPUçš„æ‰§è¡Œï¼Œå…ˆè®°å½•å›´æ æ ‡è®°å€¼
 	const UINT64 n64CurrentFenceValue = m_render_end_fence.m_fence_value;
 	CHECK_RESULT(m_cmd_queue->Signal(m_render_end_fence.m_fence.Get(), n64CurrentFenceValue));
 	m_render_end_fence.m_fence_value++;

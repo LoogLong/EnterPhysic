@@ -72,7 +72,7 @@ class D3D12RHI
 public:
 	D3D12RHI(const HWND& hwnd);
 
-	// Ã¶¾ÙÊÊÅäÆ÷£¬²¢Ñ¡ÔñºÏÊÊµÄÊÊÅäÆ÷À´´´½¨3DÉè±¸¶ÔÏó
+	// æšä¸¾é€‚é…å™¨ï¼Œå¹¶é€‰æ‹©åˆé€‚çš„é€‚é…å™¨æ¥åˆ›å»º3Dè®¾å¤‡å¯¹è±¡
 	void CreateDevice();
 
 	void CreateCommandQueue();
@@ -131,17 +131,17 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_srv_cbv_heap;
 	ComPtr<ID3D12Resource1> m_render_targets[RHID3D12::FRAME_BACK_BUF_COUNT];
 
-	/*ÓÃÓÚÍ¬²½ĞÅÏ¢µÄfence*/
+	/*ç”¨äºåŒæ­¥ä¿¡æ¯çš„fence*/
 	EventFence m_render_end_fence;
 	// std::vector<EventFence> m_event_fences;
 
 
-	/*»º´æshaderºÍpso*/
+	/*ç¼“å­˜shaderå’Œpso*/
 	std::vector<ComPtr<ID3DBlob>> m_shader_cache;
 	std::vector<ComPtr<ID3D12PipelineState>> m_pipeline_states;
 	std::vector<ComPtr<ID3D12RootSignature>> m_root_signatures;
 
-	/*»º´æ±¾Ö¡ÓÃµ½µÄ×ÊÔ´*/
+	/*ç¼“å­˜æœ¬å¸§ç”¨åˆ°çš„èµ„æº*/
 	std::vector<SResource> m_render_primitives;
 
 };

@@ -17,7 +17,7 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 bool CViewport::CreateWinViewport(const HINSTANCE& hInstance, int nCmdShow)
 {
-	// ´´½¨´°¿Ú
+	// åˆ›å»ºçª—å£
 	WNDCLASSEX wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_GLOBALCLASS;
@@ -26,7 +26,7 @@ bool CViewport::CreateWinViewport(const HINSTANCE& hInstance, int nCmdShow)
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = static_cast<HBRUSH>(GetStockObject(NULL_BRUSH)); //·ÀÖ¹ÎŞÁÄµÄ±³¾°ÖØ»æ
+	wcex.hbrBackground = static_cast<HBRUSH>(GetStockObject(NULL_BRUSH)); //é˜²æ­¢æ— èŠçš„èƒŒæ™¯é‡ç»˜
 	wcex.lpszClassName = WIND_CLASS_NAME;
 	RegisterClassEx(&wcex);
 
@@ -34,7 +34,7 @@ bool CViewport::CreateWinViewport(const HINSTANCE& hInstance, int nCmdShow)
 	RECT rt_wnd = { 0, 0, m_width, m_height };
 	AdjustWindowRect(&rt_wnd, dw_wnd_style, FALSE);
 
-	// ¼ÆËã´°¿Ú¾ÓÖĞµÄÆÁÄ»×ø±ê
+	// è®¡ç®—çª—å£å±…ä¸­çš„å±å¹•åæ ‡
 	const INT pos_x = (GetSystemMetrics(SM_CXSCREEN) - rt_wnd.right - rt_wnd.left) / 2;
 	const INT pos_y = (GetSystemMetrics(SM_CYSCREEN) - rt_wnd.bottom - rt_wnd.top) / 2;
 

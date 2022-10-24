@@ -4,7 +4,7 @@
 
 CCloth::CCloth(float height, int num_height_node, int num_width_node, float spring_k, float mass, std::vector<XMFLOAT4> pinned_nodes)
 {
-	// ¹¹½¨cloth Íø¸ñ
+	// æ„å»ºcloth ç½‘æ ¼
 	assert(pinned_nodes.size() == 2, "");
 
 	const XMVECTOR left_point = XMLoadFloat4(&pinned_nodes[0]);
@@ -26,7 +26,7 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 
 	m_mass.reserve((num_width_node + 1) * (num_height_node + 1));
 
-	//¹¹½¨ÖÊµã
+	//æ„å»ºè´¨ç‚¹
 	for (int j = 0; j <= num_height_node; ++j)
 	{
 		for (int i = 0; i <= num_width_node; ++i)
@@ -38,17 +38,17 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 		}
 	}
 
-	//¹¹½¨µ¯»É
+	//æ„å»ºå¼¹ç°§
 	
 	for (int j = 0; j <= num_height_node; ++j)
 	{
 		for (int i = 0; i < num_width_node; ++i)
 		{
 			int idx = j * (num_width_node + 1) + i;
-			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + 1], spring_k);/*1.ºáÏòµ¯»É*/
+			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + 1], spring_k);/*1.æ¨ªå‘å¼¹ç°§*/
 			if (i != num_width_node-1)
 			{
-				m_springs.emplace_back(&m_mass[idx], &m_mass[idx + 2], spring_k);/*1.ºáÏò¿çÖÊµãµ¯»É*/
+				m_springs.emplace_back(&m_mass[idx], &m_mass[idx + 2], spring_k);/*1.æ¨ªå‘è·¨è´¨ç‚¹å¼¹ç°§*/
 			}
 		}
 	}
@@ -58,10 +58,10 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 		for (int i = 0; i <= num_width_node; ++i)
 		{
 			int idx = j * (num_width_node + 1) + i;
-			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 1], spring_k);/*2.ÊúÏòµ¯»É*/
+			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 1], spring_k);/*2.ç«–å‘å¼¹ç°§*/
 			if (j != num_height_node - 1)
 			{
-				m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 1], spring_k);/*1.ºáÏò¿çÖÊµãµ¯»É*/
+				m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 1], spring_k);/*1.æ¨ªå‘è·¨è´¨ç‚¹å¼¹ç°§*/
 			}
 		}
 	}
@@ -71,8 +71,8 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 		for (int i = 0; i < num_width_node; ++i)
 		{
 			int idx = j * (num_width_node + 1) + i;
-			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 2], spring_k);/*3.Æ²Ïòµ¯»É*/
-			m_springs.emplace_back(&m_mass[idx+1], &m_mass[idx + num_width_node + 1], spring_k);/*4.ŞàÏòµ¯»É*/
+			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 2], spring_k);/*3.æ’‡å‘å¼¹ç°§*/
+			m_springs.emplace_back(&m_mass[idx+1], &m_mass[idx + num_width_node + 1], spring_k);/*4.æºå‘å¼¹ç°§*/
 		}
 	}
 
@@ -80,7 +80,7 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 	m_width_vertices = num_width_node + 1;
 	m_height_vertices = num_height_node + 1;
 
-	//ÉèÖÃ±»¹Ì¶¨µÄµã
+	//è®¾ç½®è¢«å›ºå®šçš„ç‚¹
 	// for (int i = 0; i <= num_width_node; ++i)
 	// {
 	// 	m_mass[i].pinned = true;
@@ -182,7 +182,7 @@ void CCloth::SimulateEuler(float delta_t, DirectX::XMFLOAT4 gravity)
 			int random_val = g_distr(g_eng);
 			/*Wind Force*/
 			const XMVECTOR wind_force = XMVectorSet(random_val, 0, random_val, 0);
-			/*×èÁ¦*/
+			/*é˜»åŠ›*/
 			XMVECTOR dump_force = -velocity * (1.0f - Config::DUMP_FACTOR);
 
 			XMVECTOR total_force = XMLoadFloat4(&m.forces) + gravity_force + wind_force + dump_force;
@@ -192,13 +192,13 @@ void CCloth::SimulateEuler(float delta_t, DirectX::XMFLOAT4 gravity)
 
 			XMVECTOR acceleration = total_force / m.mass;
 
-			velocity = velocity + acceleration * delta_t; //°ëÒşÊ½semi-implicit euler
+			velocity = velocity + acceleration * delta_t; //åŠéšå¼semi-implicit euler
 
 			XMVECTOR position = XMLoadFloat4(&m.position);
 			position = position + velocity * delta_t;
 			XMStoreFloat4(&m.position, position);
 
-			//velocity = velocity + acceleration * delta_t;//ÏÔÊ¾explicit euler
+			//velocity = velocity + acceleration * delta_t;//æ˜¾ç¤ºexplicit euler
 			XMStoreFloat4(&m.velocity, velocity);
 		}
 
@@ -218,7 +218,7 @@ void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vec
 		point_vertices.emplace_back(mass.position, point_color);
 	}
 
-	/*1.ºáÏò*/
+	/*1.æ¨ªå‘*/
 	for (int j = 0; j < m_height_vertices; ++j)
 	{
 		for (int i = 0; i < m_width_vertices-1; ++i)
@@ -228,7 +228,7 @@ void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vec
 			line_vertices.emplace_back(m_mass[idx + 1].position, line_color);
 		}
 	}
-	/*2.ÊúÏò*/
+	/*2.ç«–å‘*/
 	for (int j = 0; j < m_height_vertices-1; ++j)
 	{
 		for (int i = 0; i < m_width_vertices; ++i)

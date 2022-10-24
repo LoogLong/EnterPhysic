@@ -3,7 +3,7 @@
 #include <tchar.h>
 #include <windows.h>
 
-#define WIND_CLASS_NAME _T("GRS Game Window Class")
+#define WIND_CLASS_NAME _T("Window Class")
 #define WINDOW_TITLE	_T("Direct12 Physics Smulate Sample")
 
 
