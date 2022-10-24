@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="MassSpring">
+      <UniqueIdentifier>{fe53b5be-b63b-4132-a98b-1ba60b3265fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MassSpring\public">
+      <UniqueIdentifier>{ab11d386-ec8f-483c-bbdb-bb31d01788e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MassSpring\private">
+      <UniqueIdentifier>{5fed2148-aa20-43ab-ad28-420b28c290d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHID3D12">
+      <UniqueIdentifier>{41375aec-0ff9-41b6-9ffa-8ea90a16edf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowsLaunch">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="WindowsLaunch\public">
+      <UniqueIdentifier>{66465dd1-b597-46ba-a24b-005138e5ea7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowsLaunch\private">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mass.h">
+      <Filter>MassSpring\public</Filter>
+    </ClInclude>
+    <ClInclude Include="rope.h">
+      <Filter>MassSpring\public</Filter>
+    </ClInclude>
+    <ClInclude Include="spring.h">
+      <Filter>MassSpring\public</Filter>
+    </ClInclude>
+    <ClInclude Include="cloth.h">
+      <Filter>MassSpring\public</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12RHI.h">
+      <Filter>RHID3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>WindowsLaunch\public</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>WindowsLaunch\public</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>WindowsLaunch\public</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>WindowsLaunch\public</Filter>
+    </ClInclude>
+    <ClInclude Include="viewport.h">
+      <Filter>WindowsLaunch\public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="viewport.cpp">
+      <Filter>WindowsLaunch\private</Filter>
+    </ClCompile>
+    <ClCompile Include="cloth.cpp">
+      <Filter>MassSpring\private</Filter>
+    </ClCompile>
+    <ClCompile Include="rope.cpp">
+      <Filter>MassSpring\private</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12RHI.cpp">
+      <Filter>RHID3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>WindowsLaunch</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Physic.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="Physic.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
