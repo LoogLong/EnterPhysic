@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <strsafe.h>
 #include <tchar.h>
 #include <windows.h>

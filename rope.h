@@ -1,4 +1,4 @@
-#ifndef ROPE_H
+﻿#ifndef ROPE_H
 #define ROPE_H
 #include <DirectXMath.h>
 #include "mass.h"

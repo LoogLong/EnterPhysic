@@ -1,4 +1,4 @@
-#ifndef MASS_H
+﻿#ifndef MASS_H
 #define MASS_H
 
 #include <DirectXMath.h>

@@ -1,4 +1,4 @@
-#ifndef SPRING_H
+﻿#ifndef SPRING_H
 #define SPRING_H
 
 #include "mass.h"
