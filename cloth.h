@@ -12,7 +12,7 @@ public:
 
 	void SimulateVerlet(float delta_t, DirectX::XMFLOAT4 gravity);
 	void SimulateEuler(float delta_t, DirectX::XMFLOAT4 gravity);
-	void GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vector<RHI_VERTEX>& line_vertices);
+	void GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vector<RHI_VERTEX>& line_vertices, XMFLOAT4 color);
 
 	std::vector<SMass> m_mass{};
 	std::vector<SSpring> m_springs{};
@@ -30,4 +30,5 @@ public:
 	void UpdatePhysic(std::vector<RHI_VERTEX>& point_vertices, std::vector<RHI_VERTEX>& line_vertices);
 private:
 	CCloth* m_cloth{ nullptr };
+	CCloth* m_cloth_euler{ nullptr };
 };

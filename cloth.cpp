@@ -71,8 +71,8 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 		for (int i = 0; i < num_width_node; ++i)
 		{
 			int idx = j * (num_width_node + 1) + i;
-			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 2], spring_k);/*3.撇向弹簧*/
-			m_springs.emplace_back(&m_mass[idx+1], &m_mass[idx + num_width_node + 1], spring_k);/*4.捺向弹簧*/
+			m_springs.emplace_back(&m_mass[idx], &m_mass[idx + num_width_node + 2], spring_k*0.1f);/*3.撇向弹簧*/
+			m_springs.emplace_back(&m_mass[idx+1], &m_mass[idx + num_width_node + 1], spring_k*0.1f);/*4.捺向弹簧*/
 		}
 	}
 
@@ -81,12 +81,12 @@ CCloth::CCloth(float height, int num_height_node, int num_width_node, float spri
 	m_height_vertices = num_height_node + 1;
 
 	//设置被固定的点
-	// for (int i = 0; i <= num_width_node; ++i)
-	// {
-	// 	m_mass[i].pinned = true;
-	// }
-	m_mass[0].pinned = true;
-	m_mass[num_width_node].pinned = true;
+	for (int i = 0; i <= num_width_node; ++i)
+	{
+		m_mass[i].pinned = true;
+	}
+	// m_mass[0].pinned = true;
+	// m_mass[num_width_node].pinned = true;
 }
 
 
@@ -112,7 +112,7 @@ void CCloth::SimulateVerlet(float delta_t, DirectX::XMFLOAT4 gravity)
 
 			XMVECTOR total_acceleration = wind_force / m.mass + gravity_vector;
 
-			this_position = this_position + (this_position - last_position) * (1.0f - Config::DUMP_FACTOR) + total_acceleration * delta_t * delta_t;
+			this_position = this_position + (this_position - last_position) * (1.0f - Config::DUMP_FACTOR * 0.01f) + total_acceleration * delta_t * delta_t;
 
 
 			m.last_position = m.position;
@@ -183,7 +183,7 @@ void CCloth::SimulateEuler(float delta_t, DirectX::XMFLOAT4 gravity)
 			/*Wind Force*/
 			const XMVECTOR wind_force = XMVectorSet(random_val, 0, random_val, 0);
 			/*阻力*/
-			XMVECTOR dump_force = -velocity * (1.0f - Config::DUMP_FACTOR);
+			XMVECTOR dump_force = -velocity * Config::DUMP_FACTOR;
 
 			XMVECTOR total_force = XMLoadFloat4(&m.forces) + gravity_force + wind_force + dump_force;
 			XMStoreFloat4(&m.forces, total_force);
@@ -207,15 +207,12 @@ void CCloth::SimulateEuler(float delta_t, DirectX::XMFLOAT4 gravity)
 	}
 }
 
-void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vector<RHI_VERTEX>& line_vertices)
+void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vector<RHI_VERTEX>& line_vertices, XMFLOAT4 color)
 {
-	XMFLOAT4 point_color = { 1.f, 1.f, 1.0f, 1.0f }; //White
-	XMFLOAT4 line_color = { 1.f, 1.f, 0.0f, 1.0f }; //White
-
 	point_vertices.reserve(m_mass.size());
 	for (const auto & mass : m_mass)
 	{
-		point_vertices.emplace_back(mass.position, point_color);
+		point_vertices.emplace_back(mass.position, color);
 	}
 
 	/*1.横向*/
@@ -224,8 +221,8 @@ void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vec
 		for (int i = 0; i < m_width_vertices-1; ++i)
 		{
 			const int idx = j * m_width_vertices + i;
-			line_vertices.emplace_back(m_mass[idx].position, line_color);
-			line_vertices.emplace_back(m_mass[idx + 1].position, line_color);
+			line_vertices.emplace_back(m_mass[idx].position, color);
+			line_vertices.emplace_back(m_mass[idx + 1].position, color);
 		}
 	}
 	/*2.竖向*/
@@ -234,8 +231,8 @@ void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vec
 		for (int i = 0; i < m_width_vertices; ++i)
 		{
 			const int idx = j * m_width_vertices + i;
-			line_vertices.emplace_back(m_mass[idx].position, line_color);
-			line_vertices.emplace_back(m_mass[idx + m_width_vertices].position, line_color);
+			line_vertices.emplace_back(m_mass[idx].position, color);
+			line_vertices.emplace_back(m_mass[idx + m_width_vertices].position, color);
 		}
 	}
 }
@@ -243,41 +240,24 @@ void CCloth::GetRenderResource(std::vector<RHI_VERTEX>& point_vertices, std::vec
 PhysicCloth::PhysicCloth()
 {
 	std::vector<XMFLOAT4> pined_node;
-	pined_node.emplace_back(-200, 200, 400, 1.0f);
+	pined_node.emplace_back(-200, 200, 0, 1.0f);
 	pined_node.emplace_back(200, 200, 0, 1.0f);
 	m_cloth = new CCloth(400.f, 50, 50, Config::ks, Config::mass, pined_node);
+	m_cloth_euler = new CCloth(400.f, 50, 50, Config::ks, Config::mass, pined_node);
 }
 void PhysicCloth::UpdatePhysic(std::vector<RHI_VERTEX>& point_vertices, std::vector<RHI_VERTEX>& line_vertices)
 {
 	const float delta_time = static_cast<float>(1) / static_cast<float>(Config::steps_per_frame);
+
 	// for (uint32_t i = 0; i < Config::steps_per_frame; i++)
 	// {
 	// 	m_cloth->SimulateEuler(delta_time, Config::gravity);
 	// }
-	// m_cloth->SimulateEuler(delta_time, Config::gravity);
+	//m_cloth_euler->SimulateEuler(delta_time, Config::gravity);
 	m_cloth->SimulateVerlet(delta_time, Config::gravity);
+
+
 	// Rendering ropes
-	CCloth* cloth = m_cloth;
-
-
-	// std::vector<RHI_VERTEX> point_vertices;
-	// std::vector<RHI_VERTEX> line_vertices;
-	m_cloth->GetRenderResource(point_vertices, line_vertices);
-	// for (int i = 0; i < 2; i++)
-	// {
-	// 	XMFLOAT4 vertex_color = { 1.f, 1.f, 1.0f, 1.0f }; //White
-	// 	
-	//
-	// 	for (auto& m : cloth->m_mass)
-	// 	{
-	// 		point_vertices.emplace_back(m.position, vertex_color);
-	// 	}
-	//
-	//
-	// 	for (auto& s : cloth->m_springs)
-	// 	{
-	// 		line_vertices.emplace_back(s.m1->position, vertex_color);
-	// 		line_vertices.emplace_back(s.m2->position, vertex_color);
-	// 	}
-	// }
+	m_cloth->GetRenderResource(point_vertices, line_vertices, { 1.f, 0.9f, 0.9f, 1.f });
+	//m_cloth_euler->GetRenderResource(point_vertices, line_vertices, { 1.f, 1.f, 1.0f, 1.0f });
 }

@@ -23,7 +23,7 @@ namespace RHID3D12
 	constexpr TCHAR SHADER_PATH[MAX_PATH] = _T("Shader\\shaders.hlsl");
 }
 
-#define CHECK_RESULT(hr) assert(SUCCEEDED(hr), "")
+#define CHECK_RESULT(hr) if(!SUCCEEDED(hr)){ printf("[ERROR]:line:%d\n", __LINE__);}
 
 struct SResource
 {
@@ -44,14 +44,13 @@ struct SResource
 
 	D3D12_VERTEX_BUFFER_VIEW m_vertex_buffer_view;
 	uint32_t m_vertex_count;
-	ComPtr<ID3D12Resource> m_vertex_buffer;
+	ComPtr<ID3D12Resource2> m_vertex_buffer;
 
 	uint32_t m_pso_idx;
 	uint32_t m_root_signature_idx;
 	D3D12_PRIMITIVE_TOPOLOGY m_primitive_topology;
 
-	ComPtr<ID3D12Resource> m_const_buffer;
-	D3D12_CONSTANT_BUFFER_VIEW_DESC m_const_buffer_view;
+	uint32_t m_const_buffer_idx;
 };
 
 struct EventFence
@@ -100,7 +99,11 @@ public:
 
 	TCHAR* GetCurrentAdapterName();
 
-	void CreateResource(const std::vector<RHI_VERTEX>& vertex_vector, uint32_t pso_index, uint32_t root_signature_idx, D3D12_PRIMITIVE_TOPOLOGY type);
+	void CreateResource(const std::vector<RHI_VERTEX>& vertex_vector, uint32_t pso_index, uint32_t root_signature_idx, D3D12_PRIMITIVE_TOPOLOGY type, uint32_t const_buffer_idx);
+	void CreateGlobalConstantBuffer();
+	void CreateLocalConstantBuffer(uint32_t buffer_count);
+	void UpdateLocalConstantBuffer(uint32_t idx, void* src_data, size_t size);
+	void UpdateGlobalConstantBuffer(void* src_data, size_t size);
 
 	void ClearTempResource();
 private:
@@ -118,6 +121,8 @@ private:
 
 	HWND m_hwnd{};
 
+	UINT m_srv_cbv_uav_descriptor_size{ 0 };
+
 	ComPtr<IDXGIFactory7> m_dxgi_factory;
 	ComPtr<IDXGIAdapter1> m_dxgi_adapter;
 	ComPtr<ID3D12Device8> m_d3d12_device;
@@ -129,7 +134,13 @@ private:
 	ComPtr<IDXGISwapChain4> m_swap_chain4;
 	ComPtr<ID3D12DescriptorHeap> m_rtv_heap;
 	ComPtr<ID3D12DescriptorHeap> m_srv_cbv_heap;
-	ComPtr<ID3D12Resource1> m_render_targets[RHID3D12::FRAME_BACK_BUF_COUNT];
+	ComPtr<ID3D12Resource2> m_render_targets[RHID3D12::FRAME_BACK_BUF_COUNT];
+
+	//constant buffer
+	ComPtr<ID3D12Resource2> m_constant_buffer_global;
+	ComPtr<ID3D12DescriptorHeap> m_descriptor_heap_global;
+	std::vector <ComPtr<ID3D12Resource2>> m_constant_buffer_local;
+	ComPtr<ID3D12DescriptorHeap> m_descriptor_heap_local;
 
 	/*用于同步信息的fence*/
 	EventFence m_render_end_fence;
@@ -143,6 +154,7 @@ private:
 
 	/*缓存本帧用到的资源*/
 	std::vector<SResource> m_render_primitives;
+
 
 };
 

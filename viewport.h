@@ -9,6 +9,11 @@
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+namespace DirectX
+{
+	struct XMMATRIX;
+}
+
 class CViewport
 {
 public:
@@ -17,6 +22,8 @@ public:
 	void AddAdapterNameToWindowTitle(TCHAR* title) const;
 
 	HWND& GetWindowHwnd() { return  m_hwnd; }
+
+	static void GetViewMatrix(DirectX::XMMATRIX& out_matrix);
 
 private:
 	HWND m_hwnd { nullptr };
